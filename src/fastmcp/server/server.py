@@ -38,7 +38,8 @@ from pydantic import AnyUrl
 from starlette.middleware import Middleware as ASGIMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-from starlette.routing import BaseRoute, Route
+from starlette.routing import BaseRoute, Route, WebSocketRoute
+from starlette.websockets import WebSocket
 
 import fastmcp
 import fastmcp.server
@@ -430,6 +431,42 @@ class FastMCP(Generic[LifespanResultT]):
             return fn
 
         return decorator
+
+    def custom_ws_route(
+        self,
+        path: str,
+        name: str | None = None,
+    ):
+        """
+        Decorator to register a custom WebSocket route on the FastMCP server.
+
+        Args:
+            path: URL path for the WebSocket route (e.g., "/ws")
+            name: Optional name for the route
+
+        Example:
+            @server.custom_websocket("/ws")
+            async def websocket_endpoint(websocket: WebSocket):
+                await websocket.accept()
+                while True:
+                    data = await websocket.receive_text()
+                    await websocket.send_text(f"Echo: {data}")
+        """
+
+        def decorator(
+            func: Callable[[WebSocket], Awaitable[None]],
+        ) -> Callable[[WebSocket], Awaitable[None]]:
+            self._additional_http_routes.append(
+                WebSocketRoute(
+                    path,
+                    endpoint=func,
+                    name=name,
+                )
+            )
+            return func
+
+        return decorator
+
 
     async def _mcp_list_tools(self) -> list[MCPTool]:
         logger.debug("Handler called: list_tools")
