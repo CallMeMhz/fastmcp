@@ -54,6 +54,7 @@ from fastmcp.server.http import (
     create_sse_app,
     create_streamable_http_app,
 )
+from fastmcp.server.router import APIRouter
 from fastmcp.tools import ToolManager
 from fastmcp.tools.tool import Tool
 from fastmcp.utilities.cache import TimedCache
@@ -381,6 +382,8 @@ class FastMCP(Generic[LifespanResultT]):
 
         return decorator
 
+    def include_router(self, router: APIRouter):
+        self._additional_http_routes.extend(router.get_routes())
 
     async def _mcp_list_tools(self) -> list[MCPTool]:
         """
