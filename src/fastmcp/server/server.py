@@ -57,6 +57,7 @@ from fastmcp.server.http import (
 )
 from fastmcp.server.low_level import LowLevelServer
 from fastmcp.server.middleware import Middleware, MiddlewareContext
+from fastmcp.server.router import APIRouter
 from fastmcp.settings import Settings
 from fastmcp.tools import ToolManager
 from fastmcp.tools.tool import FunctionTool, Tool, ToolResult
@@ -467,6 +468,8 @@ class FastMCP(Generic[LifespanResultT]):
 
         return decorator
 
+    def include_router(self, router: APIRouter):
+        self._additional_http_routes.extend(router.get_routes())
 
     async def _mcp_list_tools(self) -> list[MCPTool]:
         logger.debug("Handler called: list_tools")

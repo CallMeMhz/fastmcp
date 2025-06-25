@@ -8,6 +8,7 @@ settings = Settings()
 
 from fastmcp.server.server import FastMCP
 from fastmcp.server.context import Context
+from fastmcp.server.router import APIRouter
 import fastmcp.server
 
 from fastmcp.client import Client
@@ -43,6 +44,7 @@ def __getattr__(name: str):
 
 __all__ = [
     "FastMCP",
+    "APIRouter",
     "Context",
     "client",
     "Client",
